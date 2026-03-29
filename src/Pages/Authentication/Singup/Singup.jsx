@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { motion } from "framer-motion";
+import { useForm } from "react-hook-form";
+
 import {
   User,
   Mail,
@@ -10,19 +12,29 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../../Providers/AuthProvider";
 
 const Signup = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    photo: "",
-    password: "",
-    role: "worker",
-  });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form Submitted:", formData);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const { createUser, loading } = useContext(AuthContext);
+  const onSubmit = (data) => {
+    createUser(data.email, data.password)
+      .then((userCredential) => {
+        // Signed up
+        const user = userCredential.user;
+        console.log(user);
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorMessage);
+        // ..
+      });
   };
 
   return (
@@ -77,7 +89,7 @@ const Signup = () => {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Full Name */}
               <div className="space-y-2">
@@ -91,6 +103,7 @@ const Signup = () => {
                   />
                   <input
                     type="text"
+                    {...register("name")}
                     placeholder="John Doe"
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-indigo-600 focus:bg-white transition-all shadow-sm"
                     required
@@ -110,6 +123,7 @@ const Signup = () => {
                   />
                   <input
                     type="email"
+                    {...register("email")}
                     placeholder="name@company.com"
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-indigo-600 focus:bg-white transition-all shadow-sm"
                     required
@@ -129,6 +143,7 @@ const Signup = () => {
                   />
                   <input
                     type="file"
+                    {...register("photo")}
                     placeholder="https://image.link"
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-indigo-600 focus:bg-white transition-all shadow-sm"
                   />
@@ -147,6 +162,7 @@ const Signup = () => {
                   />
                   <input
                     type="password"
+                    {...register("password")}
                     placeholder="••••••••"
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-indigo-600 focus:bg-white transition-all shadow-sm"
                     required
@@ -166,6 +182,7 @@ const Signup = () => {
                   size={18}
                 />
                 <select
+                  {...register("role")}
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-indigo-600 focus:bg-white transition-all shadow-sm appearance-none cursor-pointer font-medium text-slate-700"
                   defaultValue="worker"
                 >
@@ -187,7 +204,13 @@ const Signup = () => {
               type="submit"
               className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center justify-center gap-3"
             >
-              Create My Account <ArrowRight size={20} />
+              {loading ? (
+                <span className="loading loading-spinner loading-xl"></span>
+              ) : (
+                <span className="flex justify-self-center items-center gap-2">
+                  Create My Account <ArrowRight size={20} />
+                </span>
+              )}
             </motion.button>
 
             <p className="text-center text-slate-500 text-sm font-medium">

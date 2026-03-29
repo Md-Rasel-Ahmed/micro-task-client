@@ -1,13 +1,28 @@
-import React from "react";
+import React, { useContext } from "react";
 import { motion } from "framer-motion";
 import { Mail, Lock, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { AuthContext } from "../../Providers/AuthProvider";
 
 const Login = () => {
-  const handleLogin = (e) => {
-    e.preventDefault();
-    // Add your login logic here
-    console.log("Login Attempted");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const { login, loading } = useContext(AuthContext);
+  const onSubmit = (data) => {
+    login(data.email, data.password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
   };
 
   return (
@@ -36,7 +51,7 @@ const Login = () => {
         </div>
 
         {/* Login Form */}
-        <form onSubmit={handleLogin} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
             <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
               Email Address
@@ -48,6 +63,7 @@ const Login = () => {
               />
               <input
                 type="email"
+                {...register("email")}
                 placeholder="name@example.com"
                 className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-indigo-600 focus:bg-white transition-all shadow-sm"
                 required
@@ -74,6 +90,7 @@ const Login = () => {
               />
               <input
                 type="password"
+                {...register("password")}
                 placeholder="••••••••"
                 className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-indigo-600 focus:bg-white transition-all shadow-sm"
                 required
@@ -87,7 +104,13 @@ const Login = () => {
             type="submit"
             className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3"
           >
-            Login to Account <ArrowRight size={20} />
+            {loading ? (
+              <span className="loading loading-spinner loading-xl"></span>
+            ) : (
+              <span className="flex justify-self-center items-center gap-2">
+                Login to Account <ArrowRight size={20} />
+              </span>
+            )}
           </motion.button>
 
           <p className="text-center text-slate-500 text-sm font-medium pt-4">

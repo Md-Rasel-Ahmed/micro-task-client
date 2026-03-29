@@ -1,11 +1,32 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { CircleDollarSign, Menu, X } from "lucide-react";
+import React, { useContext, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  CircleDollarSign,
+  Coins,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Settings,
+  User,
+  X,
+} from "lucide-react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../../Providers/AuthProvider";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, logout } = useContext(AuthContext);
 
+  // user logout
+  const handleLogout = () => {
+    logout()
+      .then(() => {
+        // Sign-out successful.
+      })
+      .catch((error) => {
+        // An error happened.
+      });
+  };
   return (
     <nav className="fixed w-full bg-white/80 backdrop-blur-md z-50 border-b border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -44,24 +65,121 @@ const Navbar = () => {
               ),
             )}
           </div>
-
-          {/* Action Buttons */}
-          <div className="hidden md:flex items-center gap-4">
-            <Link to={"/login"}>
-              <button className="text-sm font-medium text-slate-600 hover:text-indigo-600">
-                Login
-              </button>
-            </Link>
-            <Link to={"/signup"}>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-indigo-600 text-white px-5 py-2 rounded-full text-sm font-semibold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all"
+          <span>{user?.email}</span>
+          {/* Action Buttons   */}
+          {user?.email ? (
+            <div className="dropdown dropdown-end">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-ghost btn-circle avatar border-0"
               >
-                Get Started
-              </motion.button>
-            </Link>
-          </div>
+                <div className="w-10 rounded-full">
+                  <img
+                    alt="Tailwind CSS Navbar component"
+                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                  />
+                </div>
+              </div>
+              <ul
+                tabIndex="-1"
+                className="menu menu-sm dropdown-content rounded-box z-1 mt-3 w-52 p-2 shadow"
+              >
+                <AnimatePresence>
+                  <motion.div
+                    initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 15, scale: 0.95 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="absolute right-0 -top-2  w-64 bg-white rounded-[28px] shadow-2xl shadow-indigo-200/50 border border-slate-100 p-3 z-[100]"
+                  >
+                    {/* User Quick Info */}
+                    <div className="p-4 mb-2 bg-slate-50 rounded-[22px] flex items-center gap-3">
+                      <div className="bg-amber-100 p-2 rounded-xl text-amber-600">
+                        <Coins size={18} />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase leading-none mb-1">
+                          Total Balance
+                        </p>
+                        <p className="text-sm font-black text-slate-800">
+                          343 Coins
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      {/* Menu Links */}
+                      <Link
+                        to="/dashboard"
+                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 transition-all font-bold text-sm group"
+                      >
+                        <LayoutDashboard
+                          size={18}
+                          className="group-hover:scale-110 transition-transform"
+                        />{" "}
+                        Dashboard
+                      </Link>
+
+                      <Link
+                        to="/dashboard/profile"
+                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 transition-all font-bold text-sm group"
+                      >
+                        <User
+                          size={18}
+                          className="group-hover:scale-110 transition-transform"
+                        />{" "}
+                        Profile
+                      </Link>
+
+                      <Link
+                        to="/dashboard/settings"
+                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 transition-all font-bold text-sm group"
+                      >
+                        <Settings
+                          size={18}
+                          className="group-hover:scale-110 transition-transform"
+                        />{" "}
+                        Settings
+                      </Link>
+
+                      {/* Divider */}
+                      <div className="h-px bg-slate-100 mx-2 my-2" />
+
+                      {/* Logout Button */}
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 p-3 w-full rounded-xl hover:bg-red-50 text-slate-600 hover:text-red-600 transition-all font-bold text-sm group text-left"
+                      >
+                        <LogOut
+                          size={18}
+                          className="group-hover:translate-x-1 transition-transform"
+                        />{" "}
+                        Logout
+                      </button>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              </ul>
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center gap-4">
+              <Link to={"/login"}>
+                <button className="text-sm font-medium text-slate-600 hover:text-indigo-600">
+                  Login
+                </button>
+              </Link>
+              <Link to={"/signup"}>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-indigo-600 text-white px-5 py-2 rounded-full text-sm font-semibold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all"
+                >
+                  Get Started
+                </motion.button>
+              </Link>
+            </div>
+          )}
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
