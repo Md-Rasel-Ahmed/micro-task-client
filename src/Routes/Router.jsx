@@ -1,0 +1,32 @@
+import { Route, Routes } from "react-router-dom";
+import Main from "../Layouts/Main";
+import Home from "../Pages/Home/Home";
+import Signup from "../Pages/Authentication/Singup/Singup";
+import Login from "../Pages/Authentication/Login";
+import Dashboard from "../Layouts/Dashboard";
+import WorkerHome from "../Pages/Dashboard/Worker_Dashboard/WorkerHome";
+import TaskList from "../Pages/Dashboard/Worker_Dashboard/TaskList";
+import MySubmissions from "../Pages/Dashboard/Worker_Dashboard/MySubmissions";
+import Withdrawals from "../Pages/Dashboard/Worker_Dashboard/Withdrawals";
+
+export default function Router() {
+  return (
+    <Routes>
+      <Route path="/" element={<Main />}>
+        <Route index element={<Home></Home>}></Route>
+        <Route path="signup" element={<Signup></Signup>}></Route>
+        <Route path="login" element={<Login></Login>}></Route>
+      </Route>
+      {/* dashboead */}
+      <Route path="/dashboard" element={<Dashboard></Dashboard>}>
+        <Route path="workerHome" element={<WorkerHome></WorkerHome>}></Route>
+        <Route path="taskList" element={<TaskList></TaskList>}></Route>
+        <Route path="withdrawals" element={<Withdrawals></Withdrawals>}></Route>
+        <Route
+          path="mySubmision"
+          element={<MySubmissions></MySubmissions>}
+        ></Route>
+      </Route>
+    </Routes>
+  );
+}
