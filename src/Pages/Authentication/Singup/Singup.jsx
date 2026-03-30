@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../../Providers/AuthProvider";
+import useAxiosPublic from "../../../Hooks/useAxiosPublic";
 
 const Signup = () => {
   const {
@@ -20,13 +21,30 @@ const Signup = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const { createUser, loading } = useContext(AuthContext);
+  const { createUser, user, loading } = useContext(AuthContext);
+  const axiosPublic = useAxiosPublic();
   const onSubmit = (data) => {
+    const userinfo = {
+      name: user?.email.slice(0, 10),
+      email: user?.email,
+      photo: "https://link-to-photo.com/user.jpg",
+      role: data.role,
+      coins: data.role === "worker" ? "10" : "50",
+      stats: {
+        tasks_posted: 0,
+        total_spent: 0,
+        pending_reviews: 0,
+      },
+      status: "active",
+      createdAt: "2026-03-30",
+    };
     createUser(data.email, data.password)
       .then((userCredential) => {
         // Signed up
         const user = userCredential.user;
-        console.log(user);
+        axiosPublic
+          .post("/users", userinfo)
+          .then((res) => console.log(res.data));
         // ...
       })
       .catch((error) => {

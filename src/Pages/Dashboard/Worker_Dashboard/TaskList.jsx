@@ -9,9 +9,11 @@ import {
   ExternalLink,
   ArrowRight,
 } from "lucide-react";
+import useTask from "../../../Hooks/useTask";
 
 const TaskList = () => {
   const navigate = useNavigate();
+  const [tasks] = useTask();
 
   // ডামি ডাটা (আপনার API থেকে আসা ডাটার ফরম্যাট এমন হতে পারে)
   const allTasks = [
@@ -57,7 +59,7 @@ const TaskList = () => {
       {/* Page Header */}
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-black text-slate-800 tracking-tight">
-          Available Tasks
+          Available Tasks ({tasks?.length})
         </h1>
         <p className="text-slate-500 font-medium">
           Choose a task, complete it, and get paid instantly.
@@ -66,7 +68,7 @@ const TaskList = () => {
 
       {/* Tasks Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {availableTasks.map((task, index) => (
+        {tasks?.map((task, index) => (
           <motion.div
             key={task._id}
             initial={{ opacity: 0, y: 20 }}

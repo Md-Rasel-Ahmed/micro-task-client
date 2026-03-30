@@ -11,13 +11,39 @@ import {
   LogOut,
   Home,
 } from "lucide-react";
+import useUsers from "../Hooks/useUsers";
 
 const Dashboard = () => {
   const [isExpanded, setIsExpanded] = useState(true);
 
   const toggleSidebar = () => setIsExpanded(!isExpanded);
+  const [users] = useUsers();
+  const buyer = true;
 
-  const menuItems = [
+  const buyerMenus = [
+    {
+      name: "Home",
+      icon: <LayoutDashboard size={22} />,
+      path: "/dashboard/buyerHome",
+    },
+    {
+      name: "Purchase Coin",
+      icon: <User size={22} />,
+      path: "/dashboard/purchaseCoins",
+    },
+    {
+      name: "Add new Tasks",
+      icon: <Settings size={22} />,
+      path: "/dashboard/addNewTask",
+    },
+    {
+      name: "My Task’s",
+      icon: <Settings size={22} />,
+      path: "/dashboard/myTasks",
+    },
+    { name: "Back to Home", icon: <Home size={22} />, path: "/" },
+  ];
+  const workerMenus = [
     {
       name: "Home",
       icon: <LayoutDashboard size={22} />,
@@ -34,6 +60,25 @@ const Dashboard = () => {
       icon: <Settings size={22} />,
       path: "/dashboard/withdrawals",
     },
+    { name: "Back to Home", icon: <Home size={22} />, path: "/" },
+  ];
+  const adminMenus = [
+    {
+      name: "Home",
+      icon: <LayoutDashboard size={22} />,
+      path: "/dashboard/workerHome",
+    },
+    {
+      name: "Manage Users",
+      icon: <User size={22} />,
+      path: "/dashboard/manageUsers",
+    },
+    {
+      name: "Manage Tasks",
+      icon: <Settings size={22} />,
+      path: "/dashboard/manageTasks",
+    },
+
     { name: "Back to Home", icon: <Home size={22} />, path: "/" },
   ];
 
@@ -65,27 +110,49 @@ const Dashboard = () => {
 
         {/* Navigation Links */}
         <nav className="flex-1 px-4 space-y-2 mt-4">
-          {menuItems.map((item, index) => (
-            <NavLink
-              key={index}
-              to={item.path}
-              className={({ isActive }) => `
+          {buyer
+            ? buyerMenus.map((item, index) => (
+                <NavLink
+                  key={index}
+                  to={item.path}
+                  className={({ isActive }) => `
                 flex items-center gap-4 p-3 rounded-xl transition-all duration-200
                 ${isActive ? "bg-white text-indigo-700 shadow-lg" : "hover:bg-indigo-600 text-indigo-100"}
               `}
-            >
-              <div className="min-w-5.5">{item.icon}</div>
-              {isExpanded && (
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="font-bold whitespace-nowrap text-sm"
                 >
-                  {item.name}
-                </motion.span>
-              )}
-            </NavLink>
-          ))}
+                  <div className="min-w-5.5">{item.icon}</div>
+                  {isExpanded && (
+                    <motion.span
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="font-bold whitespace-nowrap text-sm"
+                    >
+                      {item.name}
+                    </motion.span>
+                  )}
+                </NavLink>
+              ))
+            : workerMenus.map((item, index) => (
+                <NavLink
+                  key={index}
+                  to={item.path}
+                  className={({ isActive }) => `
+                flex items-center gap-4 p-3 rounded-xl transition-all duration-200
+                ${isActive ? "bg-white text-indigo-700 shadow-lg" : "hover:bg-indigo-600 text-indigo-100"}
+              `}
+                >
+                  <div className="min-w-5.5">{item.icon}</div>
+                  {isExpanded && (
+                    <motion.span
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="font-bold whitespace-nowrap text-sm"
+                    >
+                      {item.name}
+                    </motion.span>
+                  )}
+                </NavLink>
+              ))}
         </nav>
 
         {/* Logout Section */}
@@ -110,7 +177,7 @@ const Dashboard = () => {
                   Available Coins
                 </span>
                 <span className="text-sm font-black text-slate-700 leading-none">
-                  2,450.00
+                  {users?.coins}
                 </span>
               </div>
             </div>
@@ -141,10 +208,10 @@ const Dashboard = () => {
             <div className="flex items-center gap-4 group cursor-pointer">
               <div className="flex flex-col items-end hidden md:flex">
                 <span className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
-                  Ariful Islam
+                  {users?.name}
                 </span>
                 <span className="text-[10px] font-bold bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                  Worker
+                  {users?.role}
                 </span>
               </div>
 

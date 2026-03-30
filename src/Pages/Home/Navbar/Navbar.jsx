@@ -10,12 +10,14 @@ import {
   User,
   X,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { AuthContext } from "../../../Providers/AuthProvider";
+import useUsers from "../../../Hooks/useUsers";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useContext(AuthContext);
+  const [users] = useUsers();
 
   // user logout
   const handleLogout = () => {
@@ -50,11 +52,38 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            {["Home", "Find Tasks", "How it Works", "Join As a Developer"].map(
+            <NavLink
+              to={"/"}
+              className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
+            >
+              <motion.p
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                {" "}
+                Home
+              </motion.p>
+            </NavLink>
+
+            <NavLink
+              to={"/developer"}
+              className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
+            >
+              <motion.p
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                Join as Developer
+              </motion.p>
+            </NavLink>
+
+            {/* {["Home", "Find Tasks", "How it Works", "Join As a Developer"].map(
               (item, index) => (
                 <motion.a
                   key={item}
-                  href="#"
+                  href="/"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
@@ -63,7 +92,7 @@ const Navbar = () => {
                   {item}
                 </motion.a>
               ),
-            )}
+            )} */}
           </div>
           <span>{user?.email}</span>
           {/* Action Buttons   */}
@@ -103,7 +132,7 @@ const Navbar = () => {
                           Total Balance
                         </p>
                         <p className="text-sm font-black text-slate-800">
-                          343 Coins
+                          ${users?.coins} Coins
                         </p>
                       </div>
                     </div>
@@ -111,7 +140,7 @@ const Navbar = () => {
                     <div className="space-y-1">
                       {/* Menu Links */}
                       <Link
-                        to="/dashboard"
+                        to="/dashboard/workerHome"
                         className="flex items-center gap-3 p-3 rounded-xl hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 transition-all font-bold text-sm group"
                       >
                         <LayoutDashboard
