@@ -23,6 +23,7 @@ export default function Router() {
       </Route>
       {/* dashboead */}
       <Route path="/dashboard" element={<Dashboard></Dashboard>}>
+        {/* worker */}
         <Route path="workerHome" element={<WorkerHome></WorkerHome>}></Route>
         <Route path="taskList" element={<TaskList></TaskList>}></Route>
         <Route path="withdrawals" element={<Withdrawals></Withdrawals>}></Route>

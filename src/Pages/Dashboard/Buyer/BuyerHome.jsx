@@ -9,14 +9,15 @@ import {
   XCircle,
   ExternalLink,
 } from "lucide-react";
+import useTask from "../../../Hooks/useTask";
 
 const BuyerHome = () => {
   const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [, buyerTask, , , reviewTask] = useTask();
   // Mock Data - In a real app, these would come from your Backend/API
   const stats = {
-    totalTasks: 15, // Total tasks added by user
+    totalTasks: buyerTask?.length, // Total tasks added by user
     pendingTasks: 45, // Sum of all required_workers count
     totalPayment: 1250, // Total coins/amount paid
   };
@@ -106,9 +107,9 @@ const BuyerHome = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {submissions.map((sub) => (
+              {reviewTask?.map((sub) => (
                 <tr
-                  key={sub.id}
+                  key={sub._id}
                   className="hover:bg-slate-50/50 transition-colors"
                 >
                   <td className="px-6 py-4 font-medium text-slate-700">
@@ -166,7 +167,7 @@ const BuyerHome = () => {
                     Work Description
                   </label>
                   <p className="text-slate-700 mt-1 text-sm bg-slate-50 p-4 rounded-xl border border-slate-100 italic">
-                    "{selectedSubmission?.detail}"
+                    "{selectedSubmission?.submission_details}"
                   </p>
                 </div>
 

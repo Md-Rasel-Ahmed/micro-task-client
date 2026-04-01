@@ -8,40 +8,22 @@ import {
   Calendar,
   ExternalLink,
   MoreVertical,
+  Coins,
 } from "lucide-react";
+import useTask from "../../../Hooks/useTask";
+import useAxiosPublic from "../../../Hooks/useAxiosPublic";
+import { Link } from "react-router-dom";
 
 const MyTasks = () => {
-  // ডামি ডাটা (বায়ারের পোস্ট করা টাস্ক)
-  const myTasks = [
-    {
-      id: "T-901",
-      task_title: "Watch YouTube Video and Comment",
-      required_workers: 100,
-      completed_workers: 45,
-      payable_amount: 0.15,
-      completion_date: "2026-04-15",
-      status: "active",
-    },
-    {
-      id: "T-902",
-      task_title: "Download and Review Mobile App",
-      required_workers: 50,
-      completed_workers: 50,
-      payable_amount: 0.5,
-      completion_date: "2026-04-10",
-      status: "completed",
-    },
-    {
-      id: "T-903",
-      task_title: "Visit Website and Click 5 Pages",
-      required_workers: 200,
-      completed_workers: 120,
-      payable_amount: 0.08,
-      completion_date: "2026-04-20",
-      status: "active",
-    },
-  ];
-
+  const [, buyerTask, refetch] = useTask();
+  const axiosPublic = useAxiosPublic();
+  const dollar = 1 / 10;
+  const handleTaskDelete = async (id) => {
+    const res = await axiosPublic.delete(`/tasks/${id}`);
+    if (res.data.deletedCount == 1) {
+      refetch();
+    }
+  };
   return (
     <div className="space-y-8 pb-10">
       {/* Header */}
@@ -54,9 +36,11 @@ const MyTasks = () => {
             Manage and track the progress of your active tasks.
           </p>
         </div>
-        <button className="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-lg shadow-indigo-100 flex items-center gap-2 self-start hover:bg-indigo-700 transition-all">
-          Post New Task
-        </button>
+        <Link to={"/dashboard/addNewTask"}>
+          <button className="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-lg shadow-indigo-100 flex items-center gap-2 self-start hover:bg-indigo-700 transition-all">
+            Post New Task
+          </button>
+        </Link>
       </div>
 
       {/* Tasks Table Card */}
@@ -87,9 +71,9 @@ const MyTasks = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {myTasks.map((task, index) => (
+              {buyerTask?.map((task, index) => (
                 <motion.tr
-                  key={task.id}
+                  key={task._id}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: index * 0.05 }}
@@ -101,7 +85,7 @@ const MyTasks = () => {
                         {task.task_title}
                       </span>
                       <span className="text-[10px] text-slate-400 font-bold uppercase mt-1">
-                        ID: {task.id}
+                        ID: {task._id}
                       </span>
                     </div>
                   </td>
@@ -110,23 +94,19 @@ const MyTasks = () => {
                     <div className="flex flex-col gap-2 w-32">
                       <div className="flex justify-between text-[10px] font-black text-slate-500 uppercase">
                         <span>
-                          {task.completed_workers}/{task.required_workers}
+                          {2}/{task.required_workers}
                         </span>
                         <span>
-                          {Math.round(
-                            (task.completed_workers / task.required_workers) *
-                              100,
-                          )}
-                          %
+                          {Math.round((2 / task.required_workers) * 100)}%
                         </span>
                       </div>
                       <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{
-                            width: `${(task.completed_workers / task.required_workers) * 100}%`,
+                            width: `${(2 / task.required_workers) * 100}%`,
                           }}
-                          className={`h-full rounded-full ${task.status === "completed" ? "bg-emerald-500" : "bg-indigo-600"}`}
+                          className={`h-full rounded-full bg-indigo-600`}
                         />
                       </div>
                     </div>
@@ -135,13 +115,10 @@ const MyTasks = () => {
                   <td className="px-8 py-6">
                     <div className="flex flex-col">
                       <span className="text-sm font-black text-slate-800">
-                        $
-                        {(task.required_workers * task.payable_amount).toFixed(
-                          2,
-                        )}
+                        ${(dollar * task.payable_amount).toFixed(2)}
                       </span>
-                      <span className="text-[10px] text-slate-400 font-bold">
-                        ${task.payable_amount} / worker
+                      <span className="text-[10px] flex gap-1 justify-center items-center text-slate-400 font-bold">
+                        <Coins size={10}></Coins> {task.payable_amount} / worker
                       </span>
                     </div>
                   </td>
@@ -155,7 +132,10 @@ const MyTasks = () => {
                       <button className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all shadow-sm border border-transparent hover:border-indigo-100">
                         <Edit3 size={18} />
                       </button>
-                      <button className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all shadow-sm border border-transparent hover:border-red-100">
+                      <button
+                        onClick={() => handleTaskDelete(task._id)}
+                        className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all shadow-sm border border-transparent hover:border-red-100"
+                      >
                         <Trash2 size={18} />
                       </button>
                     </div>

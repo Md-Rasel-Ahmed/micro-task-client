@@ -10,9 +10,13 @@ import {
   Image as ImageIcon,
   FileText,
   Send,
+  Coins,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../../../Providers/AuthProvider";
+import useAxiosPublic from "../../../Hooks/useAxiosPublic";
+import useUsers from "../../../Hooks/useUsers";
+import moment from "moment/moment";
 
 const AddTask = () => {
   const {
@@ -21,19 +25,34 @@ const AddTask = () => {
     formState: { errors },
   } = useForm();
   const { user } = useContext(AuthContext);
+  const axiosPublick = useAxiosPublic();
+  const [users, refetch] = useUsers();
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const task = {
       task_title: data.title,
       task_detail: data.description,
-      required_workers: data.worker,
-      payable_amount: data.amount,
-      completion_date: data.date,
+      required_workers: parseInt(data.worker),
+      payable_amount: parseInt(data.amount),
+      completion_date: moment(data.date).format("MMM D, YYYY"),
       submission_info: data.info,
+      postDate: moment().format("ll"),
       task_image_url: data.image,
       email: user?.email,
     };
-    console.log(task);
+    const convertCoins = parseInt(users?.coins);
+    const convertPayableAmount = parseInt(task.payable_amount);
+    const convertWorker = parseInt(task.required_workers);
+    const totalCost = convertPayableAmount * convertWorker;
+    if (convertCoins < totalCost) {
+      return alert(" “Not available Coin.  Purchase Coin ” ");
+    }
+
+    const res = await axiosPublick.post("/tasks", task);
+    if (res.data.result.insertedId) {
+      refetch();
+    }
+    console.log(res.data);
   };
   return (
     <div className="max-w-4xl mx-auto pb-20">
@@ -114,6 +133,7 @@ const AddTask = () => {
                   type="number"
                   name="required_workers"
                   {...register("worker")}
+                  onWheel={(e) => e.target.blur()}
                   placeholder="Ex: 100"
                   className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl py-4 pl-12 pr-6 outline-none focus:border-indigo-600 focus:bg-white transition-all font-bold text-slate-700"
                   required
@@ -127,15 +147,15 @@ const AddTask = () => {
                 Payable Amount (Per Worker)
               </label>
               <div className="relative group">
-                <DollarSign
+                <Coins
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors"
                   size={20}
                 />
                 <input
                   type="number"
-                  step="0.01"
                   {...register("amount")}
-                  placeholder="Ex: 0.50"
+                  onWheel={(e) => e.target.blur()}
+                  placeholder="Ex: 10"
                   className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl py-4 pl-12 pr-6 outline-none focus:border-indigo-600 focus:bg-white transition-all font-bold text-slate-700"
                   required
                 />

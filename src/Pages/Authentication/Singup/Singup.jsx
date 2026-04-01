@@ -24,26 +24,39 @@ const Signup = () => {
   const { createUser, user, loading } = useContext(AuthContext);
   const axiosPublic = useAxiosPublic();
   const onSubmit = (data) => {
-    const userinfo = {
-      name: user?.email.slice(0, 10),
-      email: user?.email,
-      photo: "https://link-to-photo.com/user.jpg",
-      role: data.role,
-      coins: data.role === "worker" ? "10" : "50",
-      stats: {
-        tasks_posted: 0,
-        total_spent: 0,
-        pending_reviews: 0,
-      },
-      status: "active",
-      createdAt: "2026-03-30",
-    };
+    // const userinfo = {
+    //   name: user?.email.slice(0, 10),
+    //   email: user?.email,
+    //   photo: "https://link-to-photo.com/user.jpg",
+    //   role: data.role,
+    //   coins: data.role === "worker" ? "10" : "50",
+    //   stats: {
+    //     tasks_posted: 0,
+    //     total_spent: 0,
+    //     pending_reviews: 0,
+    //   },
+    //   status: "active",
+    //   createdAt: "2026-03-30",
+    // };
     createUser(data.email, data.password)
       .then((userCredential) => {
         // Signed up
         const user = userCredential.user;
         axiosPublic
-          .post("/users", userinfo)
+          .post("/users", {
+            name: user.email.slice(0, 10),
+            email: user?.email,
+            photo: "https://link-to-photo.com/user.jpg",
+            role: data.role,
+            coins: data.role === "worker" ? 10 : 50,
+            stats: {
+              tasks_posted: 0,
+              total_spent: 0,
+              pending_reviews: 0,
+            },
+            status: "active",
+            createdAt: "2026-03-30",
+          })
           .then((res) => console.log(res.data));
         // ...
       })

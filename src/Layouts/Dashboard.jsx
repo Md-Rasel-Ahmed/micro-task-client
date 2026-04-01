@@ -17,7 +17,7 @@ const Dashboard = () => {
   const [isExpanded, setIsExpanded] = useState(true);
 
   const toggleSidebar = () => setIsExpanded(!isExpanded);
-  const [users] = useUsers();
+  const [loginUser] = useUsers();
   const buyer = true;
 
   const buyerMenus = [
@@ -81,7 +81,7 @@ const Dashboard = () => {
 
     { name: "Back to Home", icon: <Home size={22} />, path: "/" },
   ];
-
+  console.log(loginUser);
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900">
       {/* --- LEFT SIDEBAR --- */}
@@ -110,7 +110,7 @@ const Dashboard = () => {
 
         {/* Navigation Links */}
         <nav className="flex-1 px-4 space-y-2 mt-4">
-          {buyer
+          {loginUser?.role == "buyer"
             ? buyerMenus.map((item, index) => (
                 <NavLink
                   key={index}
@@ -177,7 +177,7 @@ const Dashboard = () => {
                   Available Coins
                 </span>
                 <span className="text-sm font-black text-slate-700 leading-none">
-                  {users?.coins}
+                  {loginUser?.coins}
                 </span>
               </div>
             </div>
@@ -208,10 +208,10 @@ const Dashboard = () => {
             <div className="flex items-center gap-4 group cursor-pointer">
               <div className="flex flex-col items-end hidden md:flex">
                 <span className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
-                  {users?.name}
+                  {loginUser?.name}
                 </span>
                 <span className="text-[10px] font-bold bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                  {users?.role}
+                  {loginUser?.role}
                 </span>
               </div>
 

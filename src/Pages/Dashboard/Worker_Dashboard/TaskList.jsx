@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import {
   User,
   Calendar,
@@ -8,12 +8,17 @@ import {
   Users,
   ExternalLink,
   ArrowRight,
+  Coins,
 } from "lucide-react";
 import useTask from "../../../Hooks/useTask";
+import TaskDetailsModal from "./TaskDetailsModal";
+import { AuthContext } from "../../../Providers/AuthProvider";
 
 const TaskList = () => {
-  const navigate = useNavigate();
-  const [tasks] = useTask();
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [tasks, , refetch, workerRefetch] = useTask();
+  const { user } = useContext(AuthContext);
 
   // ডামি ডাটা (আপনার API থেকে আসা ডাটার ফরম্যাট এমন হতে পারে)
   const allTasks = [
@@ -51,9 +56,11 @@ const TaskList = () => {
     },
   ];
 
-  // ফিল্টারিং: শুধু সেই টাস্কগুলো দেখাবে যেগুলোতে required_workers > 0
   const availableTasks = allTasks.filter((task) => task.required_workers > 0);
-
+  const handleViewDetails = (task) => {
+    setSelectedTask(task);
+    setIsModalOpen(true);
+  };
   return (
     <div className="space-y-10 pb-12">
       {/* Page Header */}
@@ -92,7 +99,9 @@ const TaskList = () => {
                   </div>
                   <span className="text-sm font-bold">
                     Buyer:{" "}
-                    <span className="text-slate-700">{task.buyer_name}</span>
+                    <span className="text-slate-700">
+                      {task.email.slice(0, 5)}
+                    </span>
                   </span>
                 </div>
 
@@ -128,17 +137,17 @@ const TaskList = () => {
             <div className="pt-6 border-t border-slate-50 flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <div className="bg-emerald-100 p-1.5 rounded-full text-emerald-600">
-                  <DollarSign size={18} strokeWidth={3} />
+                  <Coins size={18} strokeWidth={3} />
                 </div>
                 <span className="text-xl font-black text-slate-800">
-                  {task.payable_amount.toFixed(2)}
+                  {task.payable_amount}
                 </span>
               </div>
 
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => navigate(`/dashboard/task-details/${task._id}`)}
+                onClick={() => handleViewDetails(task)}
                 className="text-indigo-600 font-bold text-sm flex items-center gap-2 hover:text-indigo-600 transition-all "
               >
                 View Details <ArrowRight size={16} />
@@ -155,6 +164,16 @@ const TaskList = () => {
             No active tasks available right now. Check back later!
           </p>
         </div>
+      )}
+      {selectedTask && (
+        <TaskDetailsModal
+          task={selectedTask}
+          isOpen={isModalOpen}
+          refetch={refetch}
+          workerRefetch={workerRefetch}
+          onClose={() => setIsModalOpen(false)}
+          currentUser={{ name: user?.email.slice(0, 5), email: user?.email }} // আপনার অথেনটিকেটেড ইউজার
+        />
       )}
     </div>
   );
