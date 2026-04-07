@@ -10,6 +10,14 @@ import {
   ChevronRight,
   LogOut,
   Home,
+  ClipboardList,
+  FileCheck,
+  History,
+  WalletCards,
+  CirclePlus,
+  PlusCircle,
+  Gem,
+  LayoutList,
 } from "lucide-react";
 import useUsers from "../Hooks/useUsers";
 
@@ -28,17 +36,17 @@ const Dashboard = () => {
     },
     {
       name: "Purchase Coin",
-      icon: <User size={22} />,
+      icon: <Gem size={22} />,
       path: "/dashboard/purchaseCoins",
     },
     {
       name: "Add new Tasks",
-      icon: <Settings size={22} />,
+      icon: <PlusCircle size={22} />,
       path: "/dashboard/addNewTask",
     },
     {
       name: "My Task’s",
-      icon: <Settings size={22} />,
+      icon: <LayoutList size={22} />,
       path: "/dashboard/myTasks",
     },
     { name: "Back to Home", icon: <Home size={22} />, path: "/" },
@@ -49,16 +57,25 @@ const Dashboard = () => {
       icon: <LayoutDashboard size={22} />,
       path: "/dashboard/workerHome",
     },
-    { name: "TaskList", icon: <User size={22} />, path: "/dashboard/taskList" },
+    {
+      name: "TaskList",
+      icon: <ClipboardList size={22} />,
+      path: "/dashboard/taskList",
+    },
     {
       name: "My Submissions",
-      icon: <Settings size={22} />,
+      icon: <FileCheck size={22} />,
       path: "/dashboard/mySubmision",
     },
     {
       name: "withdrawals",
-      icon: <Settings size={22} />,
+      icon: <WalletCards size={22} />,
       path: "/dashboard/withdrawals",
+    },
+    {
+      name: "Payment History",
+      icon: <History size={22} />,
+      path: "/dashboard/payments",
     },
     { name: "Back to Home", icon: <Home size={22} />, path: "/" },
   ];
@@ -81,7 +98,6 @@ const Dashboard = () => {
 
     { name: "Back to Home", icon: <Home size={22} />, path: "/" },
   ];
-  console.log(loginUser);
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900">
       {/* --- LEFT SIDEBAR --- */}

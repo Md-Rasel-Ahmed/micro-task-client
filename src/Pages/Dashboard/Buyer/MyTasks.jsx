@@ -24,6 +24,7 @@ const MyTasks = () => {
       refetch();
     }
   };
+  console.log(buyerTask);
   return (
     <div className="space-y-8 pb-10">
       {/* Header */}
@@ -94,17 +95,21 @@ const MyTasks = () => {
                     <div className="flex flex-col gap-2 w-32">
                       <div className="flex justify-between text-[10px] font-black text-slate-500 uppercase">
                         <span>
-                          {2}/{task.required_workers}
+                          {task.applied}/{task.required_workers + task.applied}
                         </span>
                         <span>
-                          {Math.round((2 / task.required_workers) * 100)}%
+                          {(
+                            (task.applied /
+                              (task.applied + task.required_workers)) *
+                            100
+                          ).toFixed(2)}
                         </span>
                       </div>
                       <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{
-                            width: `${(2 / task.required_workers) * 100}%`,
+                            width: `${(task.applied / (task.applied + task.required_workers)) * 100}%`,
                           }}
                           className={`h-full rounded-full bg-indigo-600`}
                         />

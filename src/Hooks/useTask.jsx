@@ -20,12 +20,12 @@ export default function useTask() {
       return res.data;
     },
   });
-  const { data: reviewTask } = useQuery({
+  const { data: reviewTask, refetch: reviewRefetch } = useQuery({
     queryKey: ["taskReview", user?.email],
     queryFn: async () => {
       const res = await axiosPublic.get(`/taskReview/${user?.email}`);
       return res.data;
     },
   });
-  return [tasks, buyerTask, refetch, workerRefetch, reviewTask];
+  return [tasks, buyerTask, refetch, workerRefetch, reviewTask, reviewRefetch];
 }

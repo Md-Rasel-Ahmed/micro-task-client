@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Clock,
@@ -8,43 +8,18 @@ import {
   Search,
   Filter,
 } from "lucide-react";
+import useAxiosPublic from "../../../Hooks/useAxiosPublic";
+import { AuthContext } from "../../../Providers/AuthProvider";
 
 const MySubmissions = () => {
-  // ডামি সাবমিশন ডাটা
-  const submissions = [
-    {
-      id: "S001",
-      task_title: "YouTube Subscribe & Like",
-      buyer_name: "John Doe",
-      payable_amount: 0.15,
-      status: "pending",
-      submitted_at: "2026-03-25",
-    },
-    {
-      id: "S002",
-      task_title: "Website SEO Visit",
-      buyer_name: "Sarah Smith",
-      payable_amount: 0.1,
-      status: "approved",
-      submitted_at: "2026-03-24",
-    },
-    {
-      id: "S003",
-      task_title: "Join Telegram Group",
-      buyer_name: "Crypto King",
-      payable_amount: 0.05,
-      status: "rejected",
-      submitted_at: "2026-03-22",
-    },
-    {
-      id: "S004",
-      task_title: "Mobile App Download",
-      buyer_name: "Alex Dev",
-      payable_amount: 0.5,
-      status: "approved",
-      submitted_at: "2026-03-20",
-    },
-  ];
+  const axiosPublic = useAxiosPublic();
+  const { user } = useContext(AuthContext);
+  const [submissions, setSubmissions] = useState([]);
+  useEffect(() => {
+    axiosPublic.get(`/submitedTask/${user?.email}`).then((res) => {
+      setSubmissions(res.data);
+    });
+  }, [axiosPublic, user]);
 
   // স্ট্যাটাস অনুযায়ী ব্যাজ স্টাইল
   const getStatusStyle = (status) => {
@@ -128,9 +103,9 @@ const MySubmissions = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {submissions.map((sub, index) => (
+              {submissions?.map((sub, index) => (
                 <motion.tr
-                  key={sub.id}
+                  key={sub._id}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: index * 0.05 }}

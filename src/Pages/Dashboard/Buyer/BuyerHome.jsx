@@ -8,13 +8,16 @@ import {
   CheckCircle,
   XCircle,
   ExternalLink,
+  Check,
 } from "lucide-react";
 import useTask from "../../../Hooks/useTask";
+import useAxiosPublic from "../../../Hooks/useAxiosPublic";
 
 const BuyerHome = () => {
   const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [, buyerTask, , , reviewTask] = useTask();
+  const axiosPublic = useAxiosPublic();
+  const [, buyerTask, , , reviewTask, reviewRefetch] = useTask();
   // Mock Data - In a real app, these would come from your Backend/API
   const stats = {
     totalTasks: buyerTask?.length, // Total tasks added by user
@@ -22,38 +25,27 @@ const BuyerHome = () => {
     totalPayment: 1250, // Total coins/amount paid
   };
 
-  const [submissions, setSubmissions] = useState([
-    {
-      id: 101,
-      worker_name: "John Doe",
-      task_title: "YouTube Subscribe",
-      payable_amount: 15,
-      detail: "Subscribed and liked. Channel name: JohnVlogs",
-    },
-    {
-      id: 102,
-      worker_name: "Sarah Smith",
-      task_title: "App Review",
-      payable_amount: 50,
-      detail: "Reviewed on PlayStore with 5 stars.",
-    },
-  ]);
-
-  const handleApprove = (id) => {
+  const handleApprove = (submission) => {
     // Logic: Increase worker coins & change status to 'approve'
-    console.log(`Approved submission ${id}. Worker paid.`);
-    setSubmissions(submissions.filter((s) => s.id !== id));
+    axiosPublic.put("/users", submission).then((res) => {
+      if (
+        res.data.result.modifiedCount === 1 &&
+        res.data.result2.modifiedCount === 1
+      ) {
+        reviewRefetch();
+      }
+    });
     setIsModalOpen(false);
   };
 
   const handleReject = (id) => {
     // Logic: Change status to 'rejected' & Increase required_workers by 1
     console.log(`Rejected submission ${id}. Required workers increased.`);
-    setSubmissions(submissions.filter((s) => s.id !== id));
     setIsModalOpen(false);
   };
 
   const openModal = (submission) => {
+    console.log(submission);
     setSelectedSubmission(submission);
     setIsModalOpen(true);
   };
@@ -122,18 +114,24 @@ const BuyerHome = () => {
                     {sub.payable_amount} Coins
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <button
-                      onClick={() => openModal(sub)}
-                      className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-600 hover:text-white transition-all"
-                    >
-                      <Eye size={14} /> View Submission
-                    </button>
+                    {sub.status === "approved" ? (
+                      <button className="inline-flex items-center gap-1.5 bg-slate-100 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold  ">
+                        <Check size={14} /> Approved Task
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => openModal(sub)}
+                        className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-600 hover:text-white transition-all"
+                      >
+                        <Eye size={14} /> View Submission
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {submissions.length === 0 && (
+          {reviewTask?.length === 0 && (
             <div className="p-10 text-center text-slate-400 italic text-sm">
               No pending submissions to review.
             </div>
@@ -173,7 +171,7 @@ const BuyerHome = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <button
-                    onClick={() => handleApprove(selectedSubmission.id)}
+                    onClick={() => handleApprove(selectedSubmission)}
                     className="flex items-center justify-center gap-2 bg-emerald-500 text-white py-3 rounded-xl font-bold hover:bg-emerald-600 shadow-lg shadow-emerald-100 transition-all"
                   >
                     <CheckCircle size={18} /> Approve

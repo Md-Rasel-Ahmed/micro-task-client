@@ -39,6 +39,7 @@ const AddTask = () => {
       postDate: moment().format("ll"),
       task_image_url: data.image,
       email: user?.email,
+      applied: 0,
     };
     const convertCoins = parseInt(users?.coins);
     const convertPayableAmount = parseInt(task.payable_amount);

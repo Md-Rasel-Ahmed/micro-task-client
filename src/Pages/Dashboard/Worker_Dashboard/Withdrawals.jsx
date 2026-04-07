@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Wallet,
@@ -9,11 +9,37 @@ import {
   DollarSign,
   ArrowDownCircle,
 } from "lucide-react";
+import useUsers from "../../../Hooks/useUsers";
+import { useForm } from "react-hook-form";
+import moment from "moment";
+import useAxiosPublic from "../../../Hooks/useAxiosPublic";
 
 const Withdrawals = () => {
-  // এই ভ্যালুগুলো আপনি আপনার লজিক দিয়ে ডাইনামিক করবেন
-  const hasEnoughCoins = true;
-
+  const [loginUser, refetch] = useUsers();
+  const [widValue, setWidValue] = useState("");
+  const axiosPublic = useAxiosPublic();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const hasEnoughCoins = loginUser?.coins / 10;
+  const onSubmit = (data) => {
+    const withdrawInfo = {
+      date: moment().format("ll"),
+      email: loginUser?.email,
+      method: data.method,
+      account: data.account,
+      withdrawCoins: widValue,
+      type: "withdrawal",
+      status: "pending",
+    };
+    axiosPublic.post("/withdraw", withdrawInfo).then((res) => {
+      if (res.data.result.insertedId) {
+        refetch();
+      }
+    });
+  };
   return (
     <div className="max-w-5xl mx-auto space-y-10 pb-20">
       {/* --- STATS SECTION --- */}
@@ -30,7 +56,9 @@ const Withdrawals = () => {
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">
               Current Coins
             </p>
-            <h2 className="text-3xl font-black text-slate-800">350</h2>
+            <h2 className="text-3xl font-black text-slate-800">
+              {loginUser?.coins}
+            </h2>
           </div>
         </motion.div>
 
@@ -46,7 +74,7 @@ const Withdrawals = () => {
             <p className="text-[10px] font-bold text-indigo-100 uppercase tracking-[0.2em] mb-1">
               Withdrawal Value
             </p>
-            <h2 className="text-3xl font-black">$17.50</h2>
+            <h2 className="text-3xl font-black">${loginUser?.coins / 10}</h2>
           </div>
         </motion.div>
 
@@ -63,7 +91,7 @@ const Withdrawals = () => {
               Exchange Rate
             </p>
             <h2 className="text-xl font-black">
-              20 Coins = <span className="text-indigo-400">$1.00</span>
+              10 Coins = <span className="text-indigo-400">$1.00</span>
             </h2>
           </div>
         </motion.div>
@@ -87,7 +115,10 @@ const Withdrawals = () => {
             </p>
           </div>
 
-          <form className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8"
+          >
             {/* Input: Coins */}
             <div className="space-y-3">
               <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1 text-indigo-600">
@@ -100,7 +131,10 @@ const Withdrawals = () => {
                 />
                 <input
                   type="number"
-                  placeholder="Enter amount (Min. 200)"
+                  onChange={(e) => setWidValue(e.target.value)}
+                  value={widValue}
+                  // {...register("coins")}
+                  placeholder="Enter amount (Min. 100)"
                   className="w-full bg-slate-50 border-2 border-slate-50 rounded-[22px] py-5 pl-14 pr-6 outline-none focus:border-indigo-600 focus:bg-white transition-all font-bold text-slate-700 text-lg shadow-sm"
                 />
               </div>
@@ -119,7 +153,8 @@ const Withdrawals = () => {
                 <input
                   type="text"
                   readOnly
-                  placeholder="0.00"
+                  {...register("dollar")}
+                  placeholder={widValue / 10}
                   className="w-full bg-slate-100 border-2 border-slate-100 rounded-[22px] py-5 pl-14 pr-6 font-black text-slate-400 text-lg cursor-not-allowed"
                 />
               </div>
@@ -135,7 +170,10 @@ const Withdrawals = () => {
                   className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"
                   size={20}
                 />
-                <select className="w-full bg-slate-50 border-2 border-slate-50 rounded-[22px] py-5 pl-14 pr-6 outline-none focus:border-indigo-600 focus:bg-white transition-all font-bold text-slate-700 appearance-none cursor-pointer text-lg shadow-sm">
+                <select
+                  {...register("method")}
+                  className="w-full bg-slate-50 border-2 border-slate-50 rounded-[22px] py-5 pl-14 pr-6 outline-none focus:border-indigo-600 focus:bg-white transition-all font-bold text-slate-700 appearance-none cursor-pointer text-lg shadow-sm"
+                >
                   <option value="">Choose Method</option>
                   <option value="bkash">bKash</option>
                   <option value="nagad">Nagad</option>
@@ -159,6 +197,7 @@ const Withdrawals = () => {
                 <input
                   type="text"
                   placeholder="017XXXXXXXX"
+                  {...register("account")}
                   className="w-full bg-slate-50 border-2 border-slate-50 rounded-[22px] py-5 pl-14 pr-6 outline-none focus:border-indigo-600 focus:bg-white transition-all font-bold text-slate-700 text-lg shadow-sm"
                 />
               </div>
@@ -166,11 +205,11 @@ const Withdrawals = () => {
 
             {/* Action Section */}
             <div className="md:col-span-2 pt-6">
-              {hasEnoughCoins ? (
+              {hasEnoughCoins >= 10 ? (
                 <motion.button
                   whileHover={{ scale: 1.01, backgroundColor: "#4338ca" }}
                   whileTap={{ scale: 0.98 }}
-                  type="button"
+                  type="submit"
                   className="w-full bg-indigo-600 text-white py-6 rounded-[25px] font-black text-xl shadow-2xl shadow-indigo-200 transition-all flex items-center justify-center gap-4 group"
                 >
                   Withdraw Now
@@ -188,7 +227,7 @@ const Withdrawals = () => {
                     </span>
                   </div>
                   <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest">
-                    Minimum 200 coins required for withdrawal
+                    Minimum 100 coins required for withdrawal
                   </p>
                 </div>
               )}

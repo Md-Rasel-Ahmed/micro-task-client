@@ -12,6 +12,7 @@ import AddTask from "../Pages/Dashboard/Buyer/AddTask";
 import MyTasks from "../Pages/Dashboard/Buyer/MyTasks";
 import PurchaseCoin from "../Pages/Dashboard/Buyer/PurchaseCoin";
 import BuyerHome from "../Pages/Dashboard/Buyer/BuyerHome";
+import PaymentHistory from "../Pages/Dashboard/Worker_Dashboard/PaymentHistory";
 
 export default function Router() {
   return (
@@ -27,6 +28,10 @@ export default function Router() {
         <Route path="workerHome" element={<WorkerHome></WorkerHome>}></Route>
         <Route path="taskList" element={<TaskList></TaskList>}></Route>
         <Route path="withdrawals" element={<Withdrawals></Withdrawals>}></Route>
+        <Route
+          path="payments"
+          element={<PaymentHistory></PaymentHistory>}
+        ></Route>
         <Route
           path="mySubmision"
           element={<MySubmissions></MySubmissions>}
