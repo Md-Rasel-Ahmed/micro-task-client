@@ -1,5 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
+import useUsers from "./../../../Hooks/useUsers";
+import useAxiosPublic from "../../../Hooks/useAxiosPublic";
 import {
   Coins,
   CheckCircle2,
@@ -11,7 +13,8 @@ import {
 } from "lucide-react";
 
 const PurchaseCoin = () => {
-  // কয়েন প্যাকেজ ডাটা (১ ডলার = ১০ কয়েন লজিক অনুযায়ী)
+  const [loginUser, refetch] = useUsers();
+  const axiosPublic = useAxiosPublic();
   const coinPackages = [
     {
       id: 1,
@@ -37,6 +40,15 @@ const PurchaseCoin = () => {
     },
   ];
 
+  const handlePurchaseCoins = (pkg) => {
+    axiosPublic
+      .post("/purchaseCoins", { coins: pkg.coins, email: loginUser?.email })
+      .then((res) => {
+        if (res.data.modifiedCount == 1) {
+          refetch();
+        }
+      });
+  };
   return (
     <div className="max-w-6xl mx-auto pb-20">
       {/* Header */}
@@ -105,6 +117,7 @@ const PurchaseCoin = () => {
             </div>
 
             <button
+              onClick={() => handlePurchaseCoins(pkg)}
               className={`w-full py-4 rounded-[22px] font-black text-lg flex items-center justify-center gap-3 transition-all shadow-lg
               ${
                 pkg.popular
@@ -140,7 +153,6 @@ const PurchaseCoin = () => {
           </div>
         </div>
         <div className="flex gap-4 grayscale opacity-40">
-          {/* এখানে পেমেন্ট গেটওয়ের লোগোগুলি বসাতে পারেন */}
           <div className="h-8 w-12 bg-slate-400 rounded-md"></div>
           <div className="h-8 w-12 bg-slate-400 rounded-md"></div>
           <div className="h-8 w-12 bg-slate-400 rounded-md"></div>

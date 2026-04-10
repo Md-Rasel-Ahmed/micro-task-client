@@ -12,26 +12,40 @@ import {
 } from "lucide-react";
 import useTask from "../../../Hooks/useTask";
 import useAxiosPublic from "../../../Hooks/useAxiosPublic";
+import moment from "moment/moment";
+import useUsers from "./../../../Hooks/useUsers";
 
 const BuyerHome = () => {
   const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const axiosPublic = useAxiosPublic();
+  const [loginUser] = useUsers();
   const [, buyerTask, , , reviewTask, reviewRefetch] = useTask();
   // Mock Data - In a real app, these would come from your Backend/API
   const stats = {
     totalTasks: buyerTask?.length, // Total tasks added by user
-    pendingTasks: 45, // Sum of all required_workers count
+    pendingTasks: reviewTask?.filter((task) => task.status === "pending")
+      .length,
     totalPayment: 1250, // Total coins/amount paid
   };
 
   const handleApprove = (submission) => {
+    console.log(submission);
     // Logic: Increase worker coins & change status to 'approve'
     axiosPublic.put("/users", submission).then((res) => {
       if (
         res.data.result.modifiedCount === 1 &&
         res.data.result2.modifiedCount === 1
       ) {
+        const data = {
+          message: `Your task ${submission.task_title} was approved by ${submission.buyer_email}.Coins added to your balance!`,
+          toEmail: submission.worker_email,
+          time: moment().format("llll"),
+          isRead: false,
+        };
+        axiosPublic.post("/notification", data).then((res) => {
+          console.log(res.data);
+        });
         reviewRefetch();
       }
     });
@@ -39,9 +53,15 @@ const BuyerHome = () => {
   };
 
   const handleReject = (id) => {
-    // Logic: Change status to 'rejected' & Increase required_workers by 1
-    console.log(`Rejected submission ${id}. Required workers increased.`);
-    setIsModalOpen(false);
+    const data = {
+      message: `Your task " titile here" was approved by "buyer 1 ". Coins added to your balance!`,
+      toEmail: "worker2@gmail.com",
+      time: moment().format("llll"),
+      isRead: false,
+    };
+    axiosPublic.post("/notification", data).then((res) => {
+      console.log(res.data);
+    });
   };
 
   const openModal = (submission) => {

@@ -20,6 +20,7 @@ import {
   LayoutList,
 } from "lucide-react";
 import useUsers from "../Hooks/useUsers";
+import NotificationUi from "../Components/NotificationUi";
 
 const Dashboard = () => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -199,23 +200,7 @@ const Dashboard = () => {
             </div>
 
             {/* 2. Notification Bell */}
-            <button className="relative p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all group">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-              </svg>
-              <span className="absolute top-2 right-2.5 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full group-hover:animate-ping"></span>
-            </button>
+            <NotificationUi></NotificationUi>
 
             {/* Vertical Divider */}
             <div className="h-8 w-px bg-slate-200 "></div>
